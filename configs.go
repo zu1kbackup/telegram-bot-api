@@ -821,7 +821,7 @@ type RemoveWebhookConfig struct {
 }
 
 func (config RemoveWebhookConfig) method() string {
-	return "setWebhook"
+	return "deleteWebhook"
 }
 
 func (config RemoveWebhookConfig) params() (Params, error) {
