@@ -813,7 +813,7 @@ func (config WebhookConfig) getFile() interface{} {
 }
 
 func (config WebhookConfig) useExistingFile() bool {
-	return config.URL != nil
+	return false
 }
 
 // RemoveWebhookConfig is a helper to remove a webhook.
