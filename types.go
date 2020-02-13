@@ -5,8 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"sort"
+	"strconv"
 	"strings"
 	"time"
+	"unicode/utf16"
 )
 
 // APIResponse is a response from the Telegram API with the result
@@ -78,6 +81,14 @@ func (u *User) String() string {
 		name += " " + u.LastName
 	}
 
+	return name
+}
+
+func (u *User) FullName() string {
+	name := u.FirstName
+	if u.LastName != "" {
+		name += " " + u.LastName
+	}
 	return name
 }
 
@@ -271,6 +282,63 @@ func (m *Message) CommandArguments() string {
 	}
 
 	return m.Text[entity.Length+1:]
+}
+
+type EntityText struct {
+	Entity MessageEntity
+	Text   string
+}
+
+func (m *Message) Parse_entity() (entitymap []EntityText) {
+	entyties := m.Entities
+	for _, entity := range entyties {
+		entitymap = append(entitymap, EntityText{
+			Entity: entity,
+			Text:   string(utf16.Decode(utf16.Encode([]rune(m.Text))[entity.Offset : entity.Offset+entity.Length])),
+		})
+	}
+	return
+}
+
+func (m *Message) Text_Markdown() (markdown_text string) {
+	if m.Text == "" {
+		return ""
+	}
+	//无论如何不能改m.text
+	message_text := utf16.Encode([]rune(m.Text))
+	last := 0
+	entities := m.Parse_entity()
+	sort.Slice(entities, func(i, j int) bool {
+		return entities[i].Entity.Offset < entities[j].Entity.Offset
+	})
+
+	for index, et := range entities {
+		if index == 0 && et.Entity.Type == "bot_command" {
+			last = et.Entity.Offset + et.Entity.Length + 1
+			continue
+		}
+		insert := ""
+		switch et.Entity.Type {
+		case "bold":
+			insert = "*" + et.Text + "*"
+		case "italic":
+			insert = "_" + et.Text + "_"
+		case "code":
+			insert = "`" + et.Text + "`"
+		case "pre":
+			insert = "```" + et.Text + "```"
+		case "text_link":
+			insert = "[" + et.Text + "](" + et.Entity.URL + ")"
+		case "url":
+			insert = "[" + et.Entity.URL + "](" + et.Entity.URL + ")"
+		case "text_mention":
+			insert = "[" + et.Text + "](tg://user?id=" + strconv.Itoa(et.Entity.User.ID) + ")"
+		}
+		markdown_text += string(utf16.Decode(message_text[last:et.Entity.Offset])) + insert
+		last = et.Entity.Offset + et.Entity.Length
+	}
+	markdown_text += string(utf16.Decode(message_text[last:]))
+	return
 }
 
 // MessageEntity contains information about data in a Message.

@@ -574,3 +574,9 @@ func (bot *BotAPI) StopPoll(config StopPollConfig) (Poll, error) {
 
 	return poll, err
 }
+
+func (bot *BotAPI) LeaveChat(config LeaveChatConfig) (err error) {
+	params, _ := config.params()
+	_, err = bot.MakeRequest(config.method(), params)
+	return err
+}

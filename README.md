@@ -1,6 +1,6 @@
 # Golang bindings for the Telegram Bot API
 
-[![GoDoc](https://godoc.org/github.com/go-telegram-bot-api/telegram-bot-api?status.svg)](http://godoc.org/github.com/go-telegram-bot-api/telegram-bot-api)
+[![GoDoc](https://godoc.org/github.com/zu1k/telegram-bot-api?status.svg)](http://godoc.org/github.com/zu1k/telegram-bot-api)
 [![Travis](https://travis-ci.org/go-telegram-bot-api/telegram-bot-api.svg)](https://travis-ci.org/go-telegram-bot-api/telegram-bot-api)
 
 All methods are fairly self explanatory, and reading the godoc page should
@@ -18,7 +18,7 @@ you want to ask questions or discuss development.
 ## Example
 
 First, ensure the library is installed and up to date by running
-`go get -u github.com/go-telegram-bot-api/telegram-bot-api`.
+`go get -u github.com/zu1k/telegram-bot-api`.
 
 This is a very simple bot that just displays any gotten updates,
 then replies it to that chat.
@@ -29,7 +29,7 @@ package main
 import (
 	"log"
 
-	"github.com/go-telegram-bot-api/telegram-bot-api"
+	"github.com/zu1k/telegram-bot-api"
 )
 
 func main() {
